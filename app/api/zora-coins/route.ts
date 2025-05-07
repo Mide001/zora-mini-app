@@ -1,4 +1,3 @@
-// api/zora-coins/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import {
   getCoinsTopGainers,
@@ -50,11 +49,8 @@ export async function GET(request: NextRequest) {
 
         response = await getCoin({
           address,
-          chain: base.id, // Add the chain parameter
+          chain: base.id,
         });
-
-        // Added console logging for debugging
-        console.log("Zora API Response:", JSON.stringify(response, null, 2));
 
         break;
 
@@ -91,7 +87,7 @@ export async function POST(request: Request) {
 
     const response = await getCoin({
       address,
-      chain: base.id, // Add the chain parameter
+      chain: base.id, 
     });
 
     return NextResponse.json(response, { status: 200 });
