@@ -12,6 +12,24 @@ interface AlertData {
   marketCapTarget: string;
 }
 
+// Utility function to format market cap values
+const formatMarketCap = (value: string | number): string => {
+  const num = typeof value === "string" ? parseFloat(value) : value;
+
+  if (isNaN(num)) return "$0";
+
+  if (num >= 1_000_000_000) {
+    return `$${(num / 1_000_000_000).toFixed(1)}B`;
+  }
+  if (num >= 1_000_000) {
+    return `$${(num / 1_000_000).toFixed(1)}M`;
+  }
+  if (num >= 1_000) {
+    return `$${(num / 1_000).toFixed(1)}K`;
+  }
+  return `$${num.toFixed(0)}`;
+};
+
 // Skeleton component for loading state
 const SkeletonCard = () => (
   <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 animate-pulse">
@@ -189,7 +207,7 @@ export default function AlertsPage() {
                       {alert.tokenName}
                     </div>
                     <div className="text-xxs text-gray-500">
-                      Target: ${alert.marketCapTarget}
+                      Target: {formatMarketCap(alert.marketCapTarget)}
                     </div>
                   </div>
                 </div>
