@@ -3,8 +3,6 @@ import {
   ArrowUp,
   ArrowDown,
   RefreshCw,
-  TrendingUp,
-  Clock,
   Info,
   Bell,
   BarChart2,
@@ -116,62 +114,59 @@ const ZoraCoinsTracker = () => {
   const { context } = useMiniKit();
   const [isSearchLoading, setIsSearchLoading] = useState(false);
 
-  // Create a debounced search function
-  const debouncedSearch = useCallback(
-    debounce(async (address: string) => {
-      if (!address) {
-        setSearchResult(null);
-        return;
-      }
+  // Inline debounced search function
+  const debouncedSearch = debounce(async (address: string) => {
+    if (!address) {
+      setSearchResult(null);
+      return;
+    }
 
-      setIsSearchLoading(true);
-      console.log("Searching for address:", address);
+    setIsSearchLoading(true);
+    console.log("Searching for address:", address);
+    
+    try {
+      const response = await fetch(
+        `/api/zora-coins?type=token-detail&address=${address}`,
+      );
       
-      try {
-        const response = await fetch(
-          `/api/zora-coins?type=token-detail&address=${address}`,
-        );
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log("API Response:", data);
-
-        if (data.data?.zora20Token) {
-          console.log("Found token data:", data.data.zora20Token);
-          const tokenData: TokenData = {
-            id: data.data.zora20Token.id || address,
-            name: data.data.zora20Token.name || "",
-            description: data.data.zora20Token.description || "",
-            address: address,
-            symbol: data.data.zora20Token.symbol || "",
-            totalSupply: data.data.zora20Token.totalSupply || "0",
-            totalVolume: data.data.zora20Token.totalVolume || "0",
-            volume24h: data.data.zora20Token.volume24h || "0",
-            marketCap: data.data.zora20Token.marketCap,
-            marketCapDelta24h: data.data.zora20Token.marketCapDelta24h,
-            uniqueHolders: data.data.zora20Token.uniqueHolders || 0,
-            mediaContent: data.data.zora20Token.mediaContent,
-            creatorAddress: data.data.zora20Token.creatorAddress,
-            createdAt: data.data.zora20Token.createdAt,
-          };
-          console.log("Formatted token data:", tokenData);
-          setSearchResult(tokenData);
-        } else {
-          console.log("No token data found in response");
-          setSearchResult(null);
-        }
-      } catch (error) {
-        console.error("Search failed:", error);
-        setSearchResult(null);
-      } finally {
-        setIsSearchLoading(false);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    }, 1000),
-    []
-  );
+      
+      const data = await response.json();
+      console.log("API Response:", data);
+
+      if (data.data?.zora20Token) {
+        console.log("Found token data:", data.data.zora20Token);
+        const tokenData: TokenData = {
+          id: data.data.zora20Token.id || address,
+          name: data.data.zora20Token.name || "",
+          description: data.data.zora20Token.description || "",
+          address: address,
+          symbol: data.data.zora20Token.symbol || "",
+          totalSupply: data.data.zora20Token.totalSupply || "0",
+          totalVolume: data.data.zora20Token.totalVolume || "0",
+          volume24h: data.data.zora20Token.volume24h || "0",
+          marketCap: data.data.zora20Token.marketCap,
+          marketCapDelta24h: data.data.zora20Token.marketCapDelta24h,
+          uniqueHolders: data.data.zora20Token.uniqueHolders || 0,
+          mediaContent: data.data.zora20Token.mediaContent,
+          creatorAddress: data.data.zora20Token.creatorAddress,
+          createdAt: data.data.zora20Token.createdAt,
+        };
+        console.log("Formatted token data:", tokenData);
+        setSearchResult(tokenData);
+      } else {
+        console.log("No token data found in response");
+        setSearchResult(null);
+      }
+    } catch (error) {
+      console.error("Search failed:", error);
+      setSearchResult(null);
+    } finally {
+      setIsSearchLoading(false);
+    }
+  }, 1000);
 
   // Handle input change
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
