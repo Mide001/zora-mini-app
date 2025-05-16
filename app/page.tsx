@@ -22,6 +22,7 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import { Button } from "./components/DemoComponents";
 import { Icon } from "./components/DemoComponents";
 import ZoraTopPage from "./components/ZoraTopPage";
+import Image from "next/image";
 
 export default function App() {
   const { setFrameReady, isFrameReady, context } = useMiniKit();
@@ -70,7 +71,25 @@ export default function App() {
 
   return (
     <div className="flex flex-col min-h-screen font-sans text-[var(--app-foreground)] mini-app-theme from-[var(--app-background)] to-[var(--app-gray)]">
-      <main className="flex-1 flex min-h-screen flex-col items-center justify-center p-0">
+      <main className="flex-1 flex min-h-screen flex-col p-0">
+        <div className="p-4 max-w-full mx-auto">
+          <div className="flex flex-col mb-3">
+            <div className="mb-4 flex justify-start items-center px-2">
+              <div className="flex flex-col">
+                <Image
+                  src="/zora-logo.png"
+                  alt="Zora"
+                  width={100}
+                  height={33}
+                  className="h-auto mb-1"
+                />
+                <span className="text-sm text-gray-500">
+                  Analytics & Creator Marketplace
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
         <ZoraTopPage />
       </main>
 
