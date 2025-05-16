@@ -56,19 +56,94 @@ interface TokenData {
 
 const TokenDetailSkeleton = () => (
   <div className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
-    <div className="p-3 border-b border-gray-200 bg-gray-50 flex items-center">
-      <div className="w-10 h-10 rounded-full bg-gray-200 mr-3"></div>
-      <div className="flex-1">
-        <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
-        <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+    {/* Header Skeleton */}
+    <div className="p-3 border-b border-gray-200 bg-gray-50">
+      <div className="flex flex-wrap items-center justify-between">
+        <div className="flex items-center mb-2 md:mb-0">
+          <div className="w-10 h-10 rounded-full bg-gray-200 mr-3"></div>
+          <div>
+            <div className="h-5 bg-gray-200 rounded w-32 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-24"></div>
+          </div>
+        </div>
+        <div className="flex flex-col items-end">
+          <div className="h-5 bg-gray-200 rounded w-20 mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-16"></div>
+        </div>
       </div>
     </div>
+
     <div className="p-3">
-      <div className="h-16 bg-gray-200 rounded mb-4"></div>
-      <div className="space-y-2 mb-4">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-4 bg-gray-200 rounded"></div>
-        ))}
+      {/* Description Skeleton */}
+      <div className="mb-4">
+        <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
+        <div className="space-y-2">
+          <div className="h-4 bg-gray-200 rounded w-full"></div>
+          <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+          <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+        </div>
+      </div>
+
+      {/* Market Data & Activity Skeleton */}
+      <div className="grid grid-cols-1 gap-4 mb-4">
+        {/* Market Data */}
+        <div>
+          <div className="h-4 bg-gray-200 rounded w-24 mb-3"></div>
+          <div className="space-y-3">
+            {[...Array(4)].map((_, i) => (
+              <div key={`market-${i}`} className="flex justify-between items-center">
+                <div className="h-4 bg-gray-200 rounded w-24"></div>
+                <div className="h-4 bg-gray-200 rounded w-32"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Activity & Holdings */}
+        <div>
+          <div className="h-4 bg-gray-200 rounded w-32 mb-3"></div>
+          <div className="space-y-3">
+            {[...Array(2)].map((_, i) => (
+              <div key={`activity-${i}`} className="flex justify-between items-center">
+                <div className="h-4 bg-gray-200 rounded w-28"></div>
+                <div className="h-4 bg-gray-200 rounded w-24"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Creator Information Skeleton */}
+      <div className="mb-4">
+        <div className="h-4 bg-gray-200 rounded w-32 mb-3"></div>
+        <div className="flex items-center mb-3">
+          <div className="w-8 h-8 rounded-full bg-gray-200 mr-2"></div>
+          <div>
+            <div className="h-4 bg-gray-200 rounded w-24 mb-1"></div>
+            <div className="h-3 bg-gray-200 rounded w-16"></div>
+          </div>
+        </div>
+        <div className="space-y-3">
+          {[...Array(2)].map((_, i) => (
+            <div key={`creator-${i}`} className="flex justify-between items-center">
+              <div className="h-4 bg-gray-200 rounded w-28"></div>
+              <div className="h-4 bg-gray-200 rounded w-40"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Token Identity Skeleton */}
+      <div>
+        <div className="h-4 bg-gray-200 rounded w-24 mb-3"></div>
+        <div className="space-y-3">
+          {[...Array(2)].map((_, i) => (
+            <div key={`identity-${i}`} className="flex justify-between items-center">
+              <div className="h-4 bg-gray-200 rounded w-24"></div>
+              <div className="h-4 bg-gray-200 rounded w-48"></div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   </div>
@@ -210,6 +285,7 @@ const TokenDetailPage = () => {
 
       const responseData = await response.json();
       if (responseData.data?.zora20Token) {
+        console.log("Token: ", responseData.data.zora20Token);
         setToken(responseData.data.zora20Token);
       } else {
         setError("Token data not found in response");
@@ -554,9 +630,12 @@ const TokenDetailPage = () => {
               {token.creatorProfile && (
                 <div className="flex items-center">
                   <span className="text-xs text-gray-500 mr-0.5">by</span>
-                  <span className="text-xs font-medium text-blue-600">
+                  <Link
+                    href={`/profile/${token.creatorProfile.handle}`}
+                    className="text-xs font-medium text-blue-600 hover:underline"
+                  >
                     @{token.creatorProfile.handle}
-                  </span>
+                  </Link>
                 </div>
               )}
             </div>
@@ -680,9 +759,12 @@ const TokenDetailPage = () => {
                     </div>
                   )}
                   <div>
-                    <div className="text-xs font-medium">
+                    <Link
+                      href={`/profile/${token.creatorProfile.handle}`}
+                      className="text-xs font-medium text-blue-600 hover:underline"
+                    >
                       @{token.creatorProfile.handle}
-                    </div>
+                    </Link>
                     <div className="text-xs text-gray-500">Creator</div>
                   </div>
                 </div>
