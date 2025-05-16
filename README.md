@@ -1,11 +1,24 @@
-# MiniKit Template
+# Spotlite
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-onchain --mini`](), configured with:
+Spotlite is a powerful analytics and creator marketplace platform built on Zora and Farcaster. It helps creators understand their coin performance and connects them with brands for sponsored content opportunities.
 
-- [MiniKit](https://docs.base.org/builderkits/minikit/overview)
-- [OnchainKit](https://www.base.org/builders/onchainkit)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Next.js](https://nextjs.org/docs)
+## Key Features
+
+### Creator Analytics
+- Track and analyze Zora coin performance
+- Understand content engagement and trends
+- Make data-driven decisions about content strategy
+
+### Creator Profiles
+- Showcase creator portfolio and performance metrics
+- Build credibility and attract potential sponsors
+- Discover other creators and their success stories
+
+### Sponsored Content Marketplace
+- Connect with brands for sponsored content opportunities
+- Manage sponsored post requests directly in Warpcast
+- Secure USDC payments for sponsored content
+- Streamlined workflow for accepting/rejecting sponsored posts
 
 ## Getting Started
 
@@ -55,6 +68,15 @@ REDIS_TOKEN=
 npm run dev
 ```
 
+## Technical Stack
+
+- [Next.js](https://nextjs.org/docs)
+- [MiniKit](https://docs.base.org/builderkits/minikit/overview)
+- [OnchainKit](https://www.base.org/builders/onchainkit)
+- [Tailwind CSS](https://tailwindcss.com)
+- [Zora Coins SDK](https://docs.zora.co/coins/overview)
+- [Farcaster Frame SDK](https://docs.farcaster.xyz/reference/frames)
+
 ## Template Features
 
 ### Frame Configuration
@@ -98,7 +120,7 @@ To get started building your own frame, follow these steps:
 
 ## Learn More
 
+- [Zora Documentation](https://docs.zora.co)
+- [Farcaster Documentation](https://docs.farcaster.xyz)
 - [MiniKit Documentation](https://docs.base.org/builderkits/minikit/overview)
 - [OnchainKit Documentation](https://docs.base.org/builderkits/onchainkit/getting-started)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
