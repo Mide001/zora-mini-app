@@ -15,6 +15,8 @@ export async function GET(request: NextRequest) {
     const after = searchParams.get("after") || undefined;
     const address = searchParams.get("address") || undefined;
 
+    console.log("API Request:", { type, count, after, address });
+
     let response;
 
     switch (type) {
@@ -47,10 +49,12 @@ export async function GET(request: NextRequest) {
           );
         }
 
+        console.log("Fetching token details for address:", address);
         response = await getCoin({
           address,
           chain: base.id,
         });
+        console.log("Token detail response:", response);
 
         break;
 
@@ -87,7 +91,7 @@ export async function POST(request: Request) {
 
     const response = await getCoin({
       address,
-      chain: base.id, 
+      chain: base.id,
     });
 
     return NextResponse.json(response, { status: 200 });
