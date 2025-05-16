@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120" height="33" viewBox="0 0 120 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="120" height="33" rx="6" fill="#F3F4F6"/>
+  
+  <!-- Text -->
+  <text x="60" y="22" font-family="Arial" font-size="16" font-weight="bold" fill="#4B5563" text-anchor="middle">Spotlite</text>
+  
+  <!-- Icon -->
+  <path d="M20 16.5C20 18.433 18.433 20 16.5 20C14.567 20 13 18.433 13 16.5C13 14.567 14.567 13 16.5 13C18.433 13 20 14.567 20 16.5Z" fill="#8B5CF6"/>
+  <path d="M16.5 8L20 13H13L16.5 8Z" fill="#8B5CF6"/>
+  <path d="M16.5 25L13 20H20L16.5 25Z" fill="#8B5CF6"/>
+</svg> 
