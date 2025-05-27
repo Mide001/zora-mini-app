@@ -275,11 +275,6 @@ export default function SponsoredPage() {
                         "Cast Sponsored Post"
                       )}
                     </button>
-                    {castingRequestId === request.requestId && (
-                      <span className="text-sm text-blue-600 dark:text-blue-400">
-                        Processing your cast...
-                      </span>
-                    )}
                     {successMessage === request.requestId && (
                       <span className="text-sm text-green-600 dark:text-green-400 animate-fade-out">
                         Cast successful! 🎉
