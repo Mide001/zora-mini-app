@@ -34,6 +34,7 @@ export default function SponsoredPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [castingRequestId, setCastingRequestId] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!fid) {
@@ -53,13 +54,17 @@ export default function SponsoredPage() {
       }
       const data = await response.json();
       console.log("Fetched sponsored requests:", data.requests);
-      
+
       // Make sure each request has a requestId
-      const requestsWithIds = data.requests.map((request: SponsoredRequest) => ({
-        ...request,
-        requestId: request.requestId || `zora-minikit:sponsored-request:${request.targetFid}-${request.timestamp}`
-      }));
-      
+      const requestsWithIds = data.requests.map(
+        (request: SponsoredRequest) => ({
+          ...request,
+          requestId:
+            request.requestId ||
+            `zora-minikit:sponsored-request:${request.targetFid}-${request.timestamp}`,
+        }),
+      );
+
       setRequests(requestsWithIds);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch requests");
@@ -87,58 +92,62 @@ export default function SponsoredPage() {
         throw new Error("No FID available. Please connect your wallet first.");
       }
 
-      // Log the request details for debugging
-      console.log("Updating request with:", {
-        requestId,
-        fid: String(fid),
-        action: "accept"
-      });
+      // If we have a cast hash, update the status to 'posted'
+      if (results?.cast?.hash) {
+        // Update the request status to 'posted' since the cast was successful
+        const updateResponse = await fetch("/api/sponsored-content/respond", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Farcaster-FID": String(fid),
+          },
+          body: JSON.stringify({
+            requestId: requestId.replace("zora-minikit:sponsored-request:", ""), // Remove the prefix if it exists
+            action: "posted",
+            fid: String(fid), // Ensure fid is a string
+            castHash: results.cast.hash,
+          }),
+        });
 
-      // Update the request status to 'accepted' since the user is in the process of casting
-      const updateResponse = await fetch("/api/sponsored-content/respond", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Farcaster-FID": String(fid),
-        },
-        body: JSON.stringify({
-          requestId: requestId.replace("zora-minikit:sponsored-request:", ""), // Remove the prefix if it exists
-          action: "accept",
-          fid: String(fid), // Ensure fid is a string
-        }),
-      });
+        if (!updateResponse.ok) {
+          const errorData = await updateResponse.json();
+          console.error("Failed to update request:", errorData);
+          throw new Error(errorData.error || "Failed to update request status");
+        }
 
-      if (!updateResponse.ok) {
-        const errorData = await updateResponse.json();
-        console.error("Failed to update request:", errorData);
-        throw new Error(errorData.error || "Failed to update request status");
+        const responseData = await updateResponse.json();
+        console.log("Update response:", responseData);
+
+        // Update the request status immediately
+        setRequests((prevRequests) =>
+          prevRequests.map((request) =>
+            request.requestId === requestId
+              ? {
+                  ...request,
+                  status: "posted",
+                }
+              : request
+          )
+        );
+
+        // Show success message and clear it after 3 seconds
+        setSuccessMessage(requestId);
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 3000);
       }
-
-      const responseData = await updateResponse.json();
-      console.log("Update response:", responseData);
-
-      console.log("Casting results: ", results?.cast);
-
-      // Update local state to show the request is being processed
-      setRequests((prevRequests) =>
-        prevRequests.map((request) =>
-          request.requestId === requestId
-            ? {
-                ...request,
-                status: "accepted",
-              }
-            : request
-        )
-      );
 
     } catch (error) {
       console.error("Error in handleCast:", error);
-      setError(error instanceof Error ? error.message : "Failed to open the cast window. Please try again.");
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to open the cast window. Please try again.",
+      );
     } finally {
       setCastingRequestId(null);
     }
   };
-  
 
   if (loading) {
     return (
@@ -245,12 +254,16 @@ export default function SponsoredPage() {
                 </div>
 
                 {request.status === "pending" && (
-                  <div className="flex justify-end">
+                  <div className="flex flex-col items-end gap-2">
                     <button
-                      onClick={() => handleCast(request.content, request.requestId)}
+                      onClick={() =>
+                        handleCast(request.content, request.requestId)
+                      }
                       disabled={castingRequestId === request.requestId}
                       className={`bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 ${
-                        castingRequestId === request.requestId ? "opacity-50 cursor-not-allowed" : ""
+                        castingRequestId === request.requestId
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
                       }`}
                     >
                       {castingRequestId === request.requestId ? (
@@ -262,12 +275,24 @@ export default function SponsoredPage() {
                         "Cast Sponsored Post"
                       )}
                     </button>
+                    {castingRequestId === request.requestId && (
+                      <span className="text-sm text-blue-600 dark:text-blue-400">
+                        Processing your cast...
+                      </span>
+                    )}
+                    {successMessage === request.requestId && (
+                      <span className="text-sm text-green-600 dark:text-green-400 animate-fade-out">
+                        Cast successful! 🎉
+                      </span>
+                    )}
                   </div>
                 )}
 
-                {castingRequestId === request.requestId && (
-                  <div className="mt-4 text-sm text-blue-600 dark:text-blue-400">
-                    Processing your cast...
+                {request.status === "posted" && (
+                  <div className="flex justify-end">
+                    <span className="text-sm text-green-600 dark:text-green-400">
+                      Cast successful! 🎉
+                    </span>
                   </div>
                 )}
               </div>
