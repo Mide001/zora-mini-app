@@ -113,6 +113,42 @@ const ZoraCoinsTracker = () => {
   const [isViewChanging, setIsViewChanging] = useState(false);
   const { context } = useMiniKit();
   const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [sponsoredCount, setSponsoredCount] = useState<number>(0);
+  const [alertsCount, setAlertsCount] = useState<number>(0);
+
+  // Add useEffect to fetch counts
+  useEffect(() => {
+    if (context?.user?.fid) {
+      // Fetch sponsored posts count
+      fetch('/api/sponsored-content/requests?fid=' + context.user.fid)
+        .then(res => res.json())
+        .then(data => {
+          const pendingCount = data.requests?.filter((req: any) => req.status === 'pending').length || 0;
+          setSponsoredCount(pendingCount);
+        })
+        .catch(console.error);
+
+      // Fetch alerts count
+      fetch('/api/market-cap-alert', {
+        headers: {
+          'X-Farcaster-FID': String(context.user.fid)
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) {
+            console.error('Error fetching alerts:', data.error);
+            return;
+          }
+          const alerts = data.alerts || [];
+          setAlertsCount(alerts.length);
+        })
+        .catch(error => {
+          console.error('Failed to fetch alerts:', error);
+          setAlertsCount(0);
+        });
+    }
+  }, [context?.user?.fid]);
 
   // Inline debounced search function
   const debouncedSearch = debounce(async (address: string) => {
@@ -313,35 +349,30 @@ const ZoraCoinsTracker = () => {
     <div className="p-4 max-w-full mx-auto">
       <div className="flex flex-col mb-3">
         <div className="mb-4 flex justify-between items-center px-2">
+          <div className="flex-1"></div>
           {context?.user?.fid && (
             <div className="flex items-center gap-2">
               <Link
-                href="/profile"
-                className="flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-600 rounded text-xs hover:bg-purple-200"
-              >
-                <Users size={14} />
-                <span>Profile</span>
-              </Link>
-              <Link
-                href="/analytics"
-                className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-600 rounded text-xs hover:bg-green-200"
-              >
-                <BarChart2 size={14} />
-                <span>Analytics</span>
-              </Link>
-              <Link
                 href="/sponsored"
-                className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs hover:bg-blue-200"
+                className="relative flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
               >
-                <DollarSign size={14} />
-                <span>Sponsored</span>
+                <DollarSign size={16} />
+                {sponsoredCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    {sponsoredCount}
+                  </span>
+                )}
               </Link>
               <Link
                 href="/alerts"
-                className="flex items-center gap-1 px-2 py-1 bg-orange-100 text-orange-600 rounded text-xs hover:bg-orange-200"
+                className="relative flex items-center justify-center w-8 h-8 bg-orange-100 text-orange-600 rounded hover:bg-orange-200"
               >
-                <Bell size={14} />
-                <span>Alerts</span>
+                <Bell size={16} />
+                {alertsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    {alertsCount}
+                  </span>
+                )}
               </Link>
             </div>
           )}
